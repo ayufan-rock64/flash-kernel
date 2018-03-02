@@ -1,6 +1,0 @@
-*.debhelper*
-*.substvars
-files
-flash-kernel
-flash-kernel-installer
-

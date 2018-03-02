@@ -1,20 +1,203 @@
-flash-kernel (3.75ev3dev3) testing; urgency=medium
+flash-kernel (3.92) unstable; urgency=medium
 
-  * Update EV3 entry for device tree
+  [ Updated translations ]
+  * Hebrew (he.po) by Yaron Shahrabani
 
- -- David Lechner <david@lechnology.com>  Mon, 27 Mar 2017 19:05:48 -0500
+ -- Christian Perrier <bubulle@debian.org>  Wed, 14 Feb 2018 07:06:31 +0100
 
-flash-kernel (3.75ev3dev2) testing; urgency=medium
+flash-kernel (3.91) unstable; urgency=medium
 
-  * Fix uenv directory path
+  [ Vagrant Cascadian ]
+  * Make ubootenv.d work on CuBox-i. Thanks to Rainer Dorsch.
+  * Do not install flash-kernel.in.
 
- -- David Lechner <david@lechnology.com>  Fri, 24 Mar 2017 18:53:11 -0500
+  [ Heinrich Schuchardt ]
+  * flash-kernel: Provide hook to start EFI application (Closes: #873390).
 
-flash-kernel (3.75ev3dev1) testing; urgency=medium
+  [ Vagrant Cascadian ]
+  * Add support for SolidRun Clearfog Boards (Closes: #839595). Thanks to
+    Christoph Egger and Joshua Mayer.
+  * Add support for SolidRun CuBox (dove) (Closes: #876773). Thanks to
+    Josua Mayer.
+  * Fix when no Kernel-Flavors are defined (Closes: #887803).
+  * Add Boot-Kernel-Path-Version and Boot-Initrd-Path-Version to be used
+    to append the version to the generated kernel/initrd images.
+  * debian/control: Set Rules-Requires-Root: no.
 
-  * ev3dev takeover with patches from jessie
+  [ Heinrich Schuchardt ]
+  * flash-kernel: support relative paths for DTB-Id (Closes: #860304).
 
- -- David Lechner <david@lechnology.com>  Fri, 24 Mar 2017 17:41:27 -0500
+  [ Vagrant Cascadian ]
+  * Add compatibility symlink to dtb in vendor sub-directory.
+  * Add support for root device specified by PARTLABEL.
+
+  [ Andre Heider ]
+  * Add support for multiple scripts sources
+
+  [ Vagrant Cascadian ]
+  * Convert Wandboard and CuBox-i to use a shared imx-base plus
+    uboot-generic boot script.
+  * Adjust sunxi boot script to prefer prefix variable if defined to set
+    the locations to search for boot files.
+
+  [ Updated translations ]
+  * Tajik (tg.po) by Victor Ibragimov
+
+ -- Christian Perrier <bubulle@debian.org>  Thu, 01 Feb 2018 06:32:56 +0100
+
+flash-kernel (3.90) unstable; urgency=medium
+
+  [ Andreas Henriksson ]
+  * Make ubootenv.d work on Wandboard (Closes: #884375).
+  * Warn when ubootenv.d snippet will be ignored (Closes: #884376).
+
+  [ Vagrant Cascadian ]
+  * Add option to allow "any" in Kernel-Flavors (Closes: #883547).
+
+  [ Ian Campbell ]
+  * Fix local shadow of $dtb_name in handle_dtb (Closes: #870430).
+  * Reduce scope of $dtb in handle_dtb.
+
+  [ Christian Perrier ]
+  * Remove Loic, Hector and Ian from Uploaders. Thanks for your work
+  * Add Vagrant and Karsten in Uploaders.
+
+ -- Christian Perrier <bubulle@debian.org>  Mon, 08 Jan 2018 06:54:35 +0100
+
+flash-kernel (3.89) unstable; urgency=medium
+
+  * Team upload.
+
+  [ Karsten Merker ]
+  * Applied a patch from Sunil Mohan Adapa <sunil@medhas.org> supporting
+    the installation of 32bit kernels on the Raspberry Pi 3.
+    (Closes: #886225).
+
+ -- Karsten Merker <merker@debian.org>  Wed, 03 Jan 2018 21:47:45 +0100
+
+flash-kernel (3.88) unstable; urgency=medium
+
+  [ Updated translations ]
+  * Lithuanian (lt.po) by Rimas Kudelis
+  * Norwegian Nynorsk (nn.po) by Allan Nordhøy
+
+ -- Christian Perrier <bubulle@debian.org>  Thu, 30 Nov 2017 06:26:18 +0100
+
+flash-kernel (3.87) unstable; urgency=medium
+
+  * Team upload.
+
+  [ Karsten Merker ]
+  * Apply a patch from Heinrich Schuchardt <xypron.glpk@gmx.de> adding
+    machine db entries for
+    - Marvell Armada 8040 DB board
+    - Marvell 8040 MACHIATOBin
+    (Closes: #878570).
+
+ -- Karsten Merker <merker@debian.org>  Sun, 15 Oct 2017 21:39:03 +0200
+
+flash-kernel (3.86) unstable; urgency=medium
+
+  [ Vagrant Cascadian ]
+  * Add entry for SolidRun HummingBoard Solo/DualLite.
+
+ -- Christian Perrier <bubulle@debian.org>  Tue, 10 Oct 2017 06:36:22 +0200
+
+flash-kernel (3.85) unstable; urgency=medium
+
+  * Team upload.
+
+  [ Ian Campbell ]
+  * Correct typo, FK_PROC_DRMODEL should be FK_PROC_DTMODEL.
+
+  [ Karsten Merker ]
+  * Add machine db entries for two sunxi-based systems that are (at
+    least partially) supported in kernel 4.13 and u-boot v2017.09:
+    - FriendlyArm NanoPi M1 Plus
+    - Olimex A20-OLinuXino-LIME2-eMMC
+
+ -- Karsten Merker <merker@debian.org>  Wed, 04 Oct 2017 21:44:02 +0200
+
+flash-kernel (3.84) unstable; urgency=medium
+
+  [ James Valleroy ]
+  * Add a machine db entry for the Raspberry Pi 3 Model B
+   (Closes: #869488).
+
+  [ Vagrant Cascadian ]
+  * Add a machine db entry for the Firefly-RK3399.
+
+ -- Christian Perrier <bubulle@debian.org>  Tue, 25 Jul 2017 06:58:47 +0200
+
+flash-kernel (3.83) unstable; urgency=medium
+
+  [ Karsten Merker ]
+  * Applied a patch from Eva Ramon <debian@empanadilla.net> adding
+    a machine db entry for the Radxa Rock 2 Square (Closes: #868166).
+
+ -- Christian Perrier <bubulle@debian.org>  Mon, 17 Jul 2017 05:53:17 +0200
+
+flash-kernel (3.82) unstable; urgency=medium
+
+  [ Karsten Merker ]
+  * Add machine db entries for various sunxi-based systems that are (at
+    least partially) supported in kernel 4.12 and u-boot v2017.07-rc3:
+    - Banana Pi BPI-M2-Plus
+    - FriendlyArm NanoPi M1
+    - FriendlyARM NanoPi NEO Air
+    - Lichee Pi Zero
+    - NextThing C.H.I.P. Pro
+    - Xunlong Orange Pi Zero
+
+ -- Christian Perrier <bubulle@debian.org>  Thu, 06 Jul 2017 09:49:37 +0200
+
+flash-kernel (3.81) unstable; urgency=medium
+
+  [ Karsten Merker ]
+  * Applied a patch from Matthias Fritzsche <txt.file@txtfile.eu> adding
+    a machine db entry for the BeagleBone Green (Closes: #866822).
+
+ -- Christian Perrier <bubulle@debian.org>  Tue, 04 Jul 2017 11:54:45 +0200
+
+flash-kernel (3.80) unstable; urgency=medium
+
+  [ Updated translations ]
+  * Simplified Chinese (zh_CN.po) by Yangfl
+
+ -- Christian Perrier <bubulle@debian.org>  Mon, 26 Jun 2017 10:46:53 +0200
+
+flash-kernel (3.79) unstable; urgency=medium
+
+  [ Roger Shimizu ]
+  * Update db entry of Buffalo Linkstation LiveV3 (LS-CHL),
+    because DTS is supported since debian kernel 4.9.10-1.
+
+ -- Christian Perrier <bubulle@debian.org>  Wed, 19 Apr 2017 06:52:13 +0200
+
+flash-kernel (3.78) unstable; urgency=medium
+
+  [ Vagrant Cascadian ]
+  * Update Orange Pi Plus db entry to also support "Xunlong Orange Pi Plus
+    / Plus 2" which is used in recent kernel versions.
+
+ -- Christian Perrier <bubulle@debian.org>  Thu, 13 Apr 2017 08:36:37 +0200
+
+flash-kernel (3.77) unstable; urgency=medium
+
+  [ Martin Michlmayr ]
+  * Add machine db entry for NETGEAR ReadyNAS Duo v2.  Thanks to Scott
+    Barker (Closes: #855960)
+  * Add machine db entry for Hardkernel ODROID-C2.  Thanks Heinrich
+    Schuchardt (Closes: #845818).
+
+ -- Christian Perrier <bubulle@debian.org>  Wed, 22 Mar 2017 06:52:54 +0100
+
+flash-kernel (3.76) unstable; urgency=medium
+
+  [ Marc Kleine-Budde ]
+  * Add machine db entry for TI OMAP4 PandaBoard-ES (Closes: #857205).
+
+ -- Christian Perrier <bubulle@debian.org>  Thu, 16 Mar 2017 05:48:21 +0100
 
 flash-kernel (3.75) unstable; urgency=medium
 

@@ -1,4 +1,14 @@
-# boot script for CuBox-i
+# boot script for BeagleBone Black
+
+# BeagleBone white uses a different .dtb file, and flash-kernel is
+# currently unable to support multiple .dtb files.
+if test "${board_name}" = "A335BONE"
+then
+  echo "BeagleBone white detected, unsupported platform."
+  echo "Exiting in 10 seconds..."
+  sleep 10
+  exit
+fi
 
 if test "${devtype}" = ""
 then
@@ -10,29 +20,23 @@ fi
 
 if test "${devnum}" = ""
 then
-  setenv partition ${mmcdev}:${mmcpart}
+  setenv partition ${bootpart}
 elif test "${distro_bootpart}" = ""
 then
-  # use partition provided by distro_bootcmd
+  # use partition provided by bootpart
   setenv partition ${devnum}:${bootpart}
 else
   # use partition provided by distro_bootpart
   setenv partition ${devnum}:${distro_bootpart}
 fi
 
-if test "${console}" = "ttymxc0" && test -n "${baudrate}"; then
-  setenv console "${console},${baudrate}"
-fi
-
-if test -n "${console}"; then
-  setenv bootargs "${bootargs} console=${console}"
-fi
-
 setenv bootargs @@LINUX_KERNEL_CMDLINE_DEFAULTS@@ ${bootargs} @@LINUX_KERNEL_CMDLINE@@
 
-if test -z "${prefix}" ; then
+if test "${prefix}" = ""
+then
   setenv image_locations '/boot/ /'
 else
+  # use prefix provided by distro_bootcmd
   setenv image_locations "${prefix}"
 fi
 
@@ -49,8 +53,8 @@ fi
 for pathprefix in ${image_locations}
 do
   load ${device} ${partition} ${loadaddr} ${pathprefix}vmlinuz-${fk_kvers} \
-  && load ${device} ${partition} ${fdt_addr} ${pathprefix}${fdtpath} \
-  && load ${device} ${partition} ${ramdiskaddr} ${pathprefix}initrd.img-${fk_kvers} \
+  && load ${device} ${partition} ${fdtaddr} ${pathprefix}${fdtpath} \
+  && load ${device} ${partition} ${rdaddr} ${pathprefix}initrd.img-${fk_kvers} \
   && echo "Booting Debian ${fk_kvers} from ${device} ${partition}..." \
-  && bootz ${loadaddr} ${ramdiskaddr}:${filesize} ${fdt_addr}
+  && bootz ${loadaddr} ${rdaddr}:${filesize} ${fdtaddr}
 done

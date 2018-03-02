@@ -20,10 +20,9 @@
 # USA.
 
 BOOTSCRIPTS_DIR="${FK_CHECKOUT:-/etc/flash-kernel}/bootscript"
-UENV_DIR="${FK_CHECKOUT:-/etc/flash-kernel}/uenv"
 FK_ETC_MACHINE="${FK_ETC_MACHINE:-/etc/flash-kernel/machine}"
 PROC_CPUINFO="${FK_PROC_CPUINFO:-/proc/cpuinfo}"
-PROC_DTMODEL="${FK_PROC_DRMODEL:-/proc/device-tree/model}"
+PROC_DTMODEL="${FK_PROC_DTMODEL:-/proc/device-tree/model}"
 PROC_MTD="/proc/mtd"
 
 read_machine_db() {
@@ -87,17 +86,17 @@ mtdsize() {
 }
 
 check_kflavors() {
-	local kfile_suffix="$1"
-	shift
-
-	if [ -z "$kfile_suffix" ]; then
+	local kvers="$1"
+	local kflavor="$2"
+	if [ "$kflavor" = "any" ]; then
 		return 0
 	fi
-	for kflavor; do
-		if [ "$kfile_suffix" = "$kflavor" ] || [ "$kfile_suffix" = "$kflavor+" ]; then
-			return 0
-		fi
-	done
+	# count flavor+ as valid
+	kvers=${kvers%%+}
+	if [ "${kvers}" != "${kvers%%$kflavor}" ]; then
+		# kernel version ended with flavor
+		return 0
+	fi
 	return 1
 }
 
@@ -245,21 +244,15 @@ get_dtb_name() {
 			error "dtb-probe $dtb_script failed"
 		fi
 		;;
-	/*)
-		dtb_name="$field"
-		;;
 	*)
-		# DTBs on arm64 are stored in subdirs for each vendor; strip
-		# the dir away (in case someone specified it, although it's
-		# not needed).
-		# The DTB will be stored in /boot/dtbs/$kvers/ without
-		# additional subdirs.
-		dtb_name=$(basename "$field")
+		dtb_name="$field"
 		;;
 	esac
 	if [ -n "$dtb_name" ] ; then
 		echo "Using DTB: $dtb_name" >&2
 	fi
+	dtb_dir=$(dirname "$dtb_name")
+	dtb_name=$(basename "$dtb_name")
 }
 
 machine_uses_flash() {
@@ -303,6 +296,19 @@ gen_kernel() {
 		set_machine_id "$machine_id"
 		cat "$input"
 	} >"$output"
+}
+
+gen_preboot() {
+	PRESTUBDIRS="/etc/flash-kernel/preboot.d /usr/share/flash-kernel/preboot.d"
+	PRESTUBS="$(find $PRESTUBDIRS -type f -regex '.*/[0-9a-zA-Z_-]+' -printf '%f\n' | LC_ALL=C sort -u)"
+	for file in $PRESTUBS; do
+		for dir in $PRESTUBDIRS; do
+			if [ -f $dir/$file ]; then
+				cat $dir/$file
+				break
+			fi
+		done
+	done
 }
 
 gen_ubootenv() {
@@ -457,10 +463,17 @@ mkimage_script() {
 	local sdata="$3"
 	local script="$4"
 
-	local tdata="$tmpdir/$(basename $sdata)"
+	local tdata="$tmpdir/$(basename $sdata).out"
 
 	local ubootenv="$(mktemp --tmpdir=$tmpdir)"
 	gen_ubootenv > $ubootenv
+	local preboot="$(mktemp --tmpdir=$tmpdir)"
+	gen_preboot > $preboot
+
+	if [ "$(stat --printf='%s' $ubootenv)" -gt 0 ] && \
+		! grep -q '@@UBOOT_ENV_EXTRA@@' "$sdata" ; then
+			echo "WARNING: ubootenv.d snippet used, but $sdata has no @@UBOOT_ENV_EXTRA@@ marker. Snippet will be ignored." >&2
+	fi
 
 	printf "Generating boot script u-boot image... " >&2
 	sed -e "s/@@KERNEL_VERSION@@/$kvers/g" \
@@ -469,6 +482,10 @@ mkimage_script() {
             -e "/@@UBOOT_ENV_EXTRA@@/{
                   s/@@UBOOT_ENV_EXTRA@@//g
                   r $ubootenv
+                }" < $sdata > $tdata \
+            -e "/@@UBOOT_PREBOOT_EXTRA@@/{
+                  s/@@UBOOT_PREBOOT_EXTRA@@//g
+                  r $preboot
                 }" < $sdata > $tdata
 	mkimage -A "$mkarch" -O linux -T script -C none -a "$saddr" -e "$saddr" \
 		-n "$sdesc" -d "$tdata" "$script" >&2 1>/dev/null
@@ -485,21 +502,6 @@ mkimage_multi() {
 	printf "Generating u-boot image..." >&2
 	mkimage -A "$mkarch" -O linux -T multi -C none -a "$maddr" -e "$maddr" \
 		-n "$mdesc" -d "$kdata:$idata" "$umulti" >&2 1>/dev/null
-	echo "done." >&2
-}
-
-generate_uenv() {
-	local input_file="$1"
-
-	local output_file="$tmpdir/uEnv.txt"
-
-	printf "Generating uEnv.txt..." >&2
-	sed -e "s/@@KERNEL_VERSION@@/$kvers/g" \
-		-e "s!@@LINUX_KERNEL_CMDLINE@@!$(get_kernel_cmdline)!g" \
-		-e "/@@UBOOT_ENV_EXTRA@@/{
-			s/@@UBOOT_ENV_EXTRA@@//g
-			r $ubootenv
-		}" > "$output_file" < "$input_file"
 	echo "done." >&2
 }
 
@@ -586,9 +588,9 @@ android_flash() {
 
 find_dtb_file() {
 	local dtb
-	case "$dtb_name" in
+	case "$dtb_dir" in
 	/*)
-		dtb="$dtb_name"
+		dtb="$dtb_dir/$dtb_name"
 		if [ ! -f "$dtb" ]; then
 			error "Couldn't find $dtb"
 		fi
@@ -612,10 +614,8 @@ handle_dtb() {
 	fi
 
 	local dtb
-	local dtb_name
 	if [ "x$FK_KERNEL_HOOK_SCRIPT" = "xpostrm.d" ] ; then
-		dtb_name=$(basename $dtb_name)
-		rm -f "/boot/dtbs/$kvers/$dtb_name"
+		rm -f "/boot/dtbs/$kvers/$dtb_dir/$dtb_name"
 
 		# This was the old name we installed under. We
 		# currently include it as an alternative symlink.
@@ -638,24 +638,27 @@ handle_dtb() {
 			rmdir --ignore-fail-on-non-empty /boot/dtbs
 		fi
 	else
-		dtb=$(find_dtb_file)
-		dtb_name=$(basename $dtb_name)
-		echo "Installing $dtb into /boot/dtbs/$kvers/$dtb_name" >&2
-		mkdir -p /boot/dtbs/$kvers/
-		cp "$dtb" "/boot/dtbs/$kvers/$dtb_name.new"
+		local dtb=$(find_dtb_file)
+		echo "Installing $dtb into /boot/dtbs/$kvers/$dtb_dir/$dtb_name" >&2
+		mkdir -p "/boot/dtbs/$kvers/$dtb_dir"
+		cp "$dtb" "/boot/dtbs/$kvers/$dtb_dir/$dtb_name.new"
 		backup_and_install \
-			"/boot/dtbs/$kvers/$dtb_name.new" \
-			"/boot/dtbs/$kvers/$dtb_name"
+			"/boot/dtbs/$kvers/$dtb_dir/$dtb_name.new" \
+			"/boot/dtbs/$kvers/$dtb_dir/$dtb_name"
+
+		if [ "$dtb_dir" != "." ]; then
+			ln -nfs "$dtb_dir/$dtb_name" "/boot/dtbs/$kvers/$dtb_name"
+		fi
 
 		# Historically we installed the dtb as
 		# dtb-$kvers, keep it around as an alternative
 		# for now. Useful for platforms which do not
 		# set ${fdtfile}
-		ln -nfs "dtbs/$kvers/$dtb_name" "/boot/dtb-$kvers"
+		ln -nfs "dtbs/$kvers/$dtb_dir/$dtb_name" "/boot/dtb-$kvers"
 
 		# This can be used along with the unversioned
 		# vmlinuz+initrd.gz e.g. as a fallback option
-		ln -nfs "dtbs/$kvers/$dtb_name" "/boot/dtb"
+		ln -nfs "dtbs/$kvers/$dtb_dir/$dtb_name" "/boot/dtb"
 	fi
 }
 
@@ -780,18 +783,19 @@ if ! check_supported "$machine"; then
 	error "Unsupported platform."
 fi
 
-if kflavors="$(get_machine_field "$machine" "Kernel-Flavors")"; then
-	kfile_suffix=""
-	while [ "$kfile_suffix" != "$kfile" ] ; do
-		kfile_suffix=$(get_kfile_suffix "$kfile" "$kfile_suffix")
-
-		if check_kflavors "$kfile_suffix" $kflavors; then
-			break
-		fi
-	done
+kfile_suffix=""
+if ! kflavors=$(get_machine_field "$machine" "Kernel-Flavors") ; then
+	# Since no Kernel-Flavors were specified, allow any kernel.
+	kflavors="any"
 fi
+for kflavor in $kflavors ; do
+	if check_kflavors "$kvers" "$kflavor" ; then
+		kfile_suffix="$kflavor"
+		break
+	fi
+done
 
-if [ "$kfile_suffix" = "$kfile" ]; then
+if [ -z "$kfile_suffix" ]; then
 	echo "Kernel $kfile does not match any of the expected flavors ($kflavors), therefore not writing it to flash." >&2
 	exit 0
 fi
@@ -814,12 +818,12 @@ usname="$(get_machine_field "$machine" "U-Boot-Script-Name")" || :
 boot_device="$(get_machine_field "$machine" "Boot-Device")" || :
 boot_kernel_path="$(get_machine_field "$machine" "Boot-Kernel-Path")" || :
 boot_initrd_path="$(get_machine_field "$machine" "Boot-Initrd-Path")" || :
+boot_kernel_path_version="$(get_machine_field "$machine" "Boot-Kernel-Path-Version")" || :
+boot_initrd_path_version="$(get_machine_field "$machine" "Boot-Initrd-Path-Version")" || :
 boot_script_path="$(get_machine_field "$machine" "Boot-Script-Path")" || :
 boot_dtb_path="$(get_machine_field "$machine" "Boot-DTB-Path")" || :
 boot_multi_path="$(get_machine_field "$machine" "Boot-Multi-Path")" || :
 android_boot_device="$(get_machine_field "$machine" "Android-Boot-Device")" || :
-uenv_path="$(get_machine_field "$machine" "U-Env-Path")" || :
-uenv_name="$(get_machine_field "$machine" "U-Env-Name")" || :
 
 if [ -n "$dtb_append_from" ]; then
     if dtb_append_required; then
@@ -929,6 +933,9 @@ case "$method" in
 		fi
 		if [ -n "$boot_kernel_path" ]; then
 			boot_kernel_path="$boot_mnt_dir/$boot_kernel_path"
+			if [ "$boot_kernel_path_version" = "yes" ]; then
+			   boot_kernel_path="${boot_kernel_path}-${kvers}"
+			fi
 			# don't mv the original kernel
 			if [ "$kernel" = "$kfile" ]; then
 				cp "$kernel" "$tmpdir/kernel"
@@ -949,6 +956,9 @@ case "$method" in
 		fi
 		if [ -n "$boot_initrd_path" ]; then
 			boot_initrd_path="$boot_mnt_dir/$boot_initrd_path"
+			if [ "$boot_initrd_path_version" = "yes" ]; then
+			   boot_initrd_path="${boot_initrd_path}-${kvers}"
+			fi
 			# don't mv the original initrd
 			if [ "$initrd" = "$ifile" ]; then
 				cp "$initrd" "$tmpdir/initrd"
@@ -966,7 +976,11 @@ case "$method" in
 		fi
 		if [ -n "$boot_script_path" ]; then
 			boot_script_path="$boot_mnt_dir/$boot_script_path"
-			boot_script="$BOOTSCRIPTS_DIR/$usname"
+			boot_script="$tmpdir/bootscript"
+			for script in $usname ; do
+				echo "\n#\n# flash-kernel: $script\n#\n" >> "$boot_script"
+				cat "$BOOTSCRIPTS_DIR/$script" >> "$boot_script"
+			done
 			mkimage_script "$usaddr" "boot script" "$boot_script" \
 				"$tmpdir/boot.scr"
 			boot_script="$tmpdir/boot.scr"
@@ -978,13 +992,6 @@ case "$method" in
 			dtb="$tmpdir/dtb"
 			cp "$boot_dtb" "$dtb"
 			backup_and_install "$dtb" "$boot_dtb_path"
-		fi
-		if [ -n "$uenv_path" ]; then
-			uenv_path="$boot_mnt_dir/$uenv_path"
-			uenv_txt="$UENV_DIR/$uenv_name"
-			generate_uenv "$uenv_txt"
-			uenv_txt="$tmpdir/uEnv.txt"
-			backup_and_install "$uenv_txt" "$uenv_path"
 		fi
 	;;
 	"symlink")

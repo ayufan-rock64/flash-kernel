@@ -67,6 +67,13 @@ DTB-Id: sun5i-a10s-auxtek-t004.dtb
 U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
+Machine: Banana Pi BPI-M2-Plus
+Kernel-Flavors: armmp armmp-lpae
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: sun8i-h3-bananapi-m2-plus.dtb
+U-Boot-Script-Name: bootscr.sunxi
+Required-Packages: u-boot-tools
+
 Machine: BA10 tvbox
 Kernel-Flavors: armmp
 Boot-Script-Path: /boot/boot.scr
@@ -76,6 +83,8 @@ Required-Packages: u-boot-tools
 
 Machine: Buffalo Linkstation LiveV3 (LS-CHL)
 Kernel-Flavors: orion5x marvell
+DTB-Append-From: 4.9.10
+DTB-Id: orion5x-linkstation-lschl.dtb
 Machine-Id: 2913
 U-Boot-Kernel-Address: 0x01a00000
 U-Boot-Initrd-Address: 0x0
@@ -299,11 +308,45 @@ DTB-Id: sun8i-a83t-cubietruck-plus.dtb
 U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
+Machine: SolidRun Clearfog A1
+Kernel-Flavors: armmp
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: armada-388-clearfog.dtb
+U-Boot-Script-Name: bootscr.uboot-generic
+Required-Packages: u-boot-tools
+
+Machine: SolidRun Clearfog Base A1
+Kernel-Flavors: armmp
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: armada-388-clearfog-base.dtb
+U-Boot-Script-Name: bootscr.uboot-generic
+Required-Packages: u-boot-tools
+
+Machine: SolidRun Clearfog Pro A1
+Kernel-Flavors: armmp
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: armada-388-clearfog-pre.dtb
+U-Boot-Script-Name: bootscr.uboot-generic
+Required-Packages: u-boot-tools
+
+Machine: SolidRun CuBox
+Kernel-Flavors: armmp
+DTB-Id: dove-cubox.dtb
+DTB-Append: yes
+Boot-Kernel-Path: /boot/uImage
+Boot-Initrd-Path: /boot/uInitrd
+U-Boot-Kernel-Address: 0x00008000
+U-Boot-Initrd-Address: 0x0
+Boot-Script-Path: /boot/boot.scr
+U-Boot-Script-Name: bootscr.cubox
+Required-Packages: u-boot-tools
+Bootloader-Sets-Incorrect-Root: yes
+
 Machine: SolidRun Cubox-i Dual/Quad
 Kernel-Flavors: armmp
 DTB-Id: imx6q-cubox-i.dtb
 Boot-Script-Path: /boot/boot.scr
-U-Boot-Script-Name: bootscr.cubox-i
+U-Boot-Script-Name: bootscr.imx-base bootscr.uboot-generic
 Required-Packages: u-boot-tools
 
 Machine: D-Link DNS-320 NAS (Rev A1)
@@ -369,6 +412,13 @@ Boot-Script-Path: /boot/boot.scr
 U-Boot-Script-Name: bootscr.uboot-generic
 Required-Packages: u-boot-tools
 
+Machine: Firefly-RK3399 Board
+Kernel-Flavors: arm64
+DTB-Id: rk3399-firefly.dtb
+Boot-Script-Path: /boot/boot.scr
+U-Boot-Script-Name: bootscr.uboot-generic
+Required-Packages: u-boot-tools
+
 Machine: Freescale i.MX53 Quick Start Board
 Machine: Freescale MX53 LOCO Board
 Kernel-Flavors: armmp mx5
@@ -382,10 +432,31 @@ Boot-Initrd-Path: /boot/uInitrd
 Required-Packages: u-boot-tools
 Bootloader-Sets-Incorrect-Root: no
 
+Machine: FriendlyArm NanoPi M1
+Kernel-Flavors: armmp armmp-lpae
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: sun8i-h3-nanopi-m1.dtb
+U-Boot-Script-Name: bootscr.sunxi
+Required-Packages: u-boot-tools
+
+Machine: FriendlyArm NanoPi M1 Plus
+Kernel-Flavors: armmp armmp-lpae
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: sun8i-h3-nanopi-m1-plus.dtb
+U-Boot-Script-Name: bootscr.sunxi
+Required-Packages: u-boot-tools
+
 Machine: FriendlyARM NanoPi NEO
 Kernel-Flavors: armmp armmp-lpae
 Boot-Script-Path: /boot/boot.scr
 DTB-Id: sun8i-h3-nanopi-neo.dtb
+U-Boot-Script-Name: bootscr.sunxi
+Required-Packages: u-boot-tools
+
+Machine: FriendlyARM NanoPi NEO Air
+Kernel-Flavors: armmp armmp-lpae
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: sun8i-h3-nanopi-neo-air.dtb
 U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
@@ -441,11 +512,18 @@ DTB-Id: sun4i-a10-marsboard.dtb
 U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
+Machine: Hardkernel ODROID-C2
+Kernel-Flavors: arm64
+DTB-Id: amlogic/meson-gxbb-odroidc2.dtb
+Boot-Script-Path: /boot/boot.scr
+U-Boot-Script-Name: bootscr.uboot-generic
+Required-Packages: u-boot-tools
+
 Machine: Hardkernel ODROID-U3 board based on Exynos4412
 Kernel-Flavors: armmp armmp-lpae
 DTB-Id: exynos4412-odroidu3.dtb
 Boot-Script-Path: /boot/boot.scr
-U-Boot-Script-Name: bootscr.odroid
+U-Boot-Script-Name: bootscr.odroid bootscr.uboot-generic
 Required-Packages: u-boot-tools
 
 Machine: Hardkernel Odroid XU4
@@ -491,6 +569,7 @@ U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
 Machine: SolidRun HummingBoard DL/Solo
+Machine: SolidRun HummingBoard Solo/DualLite
 Kernel-Flavors: armmp
 DTB-Id: imx6dl-hummingboard.dtb
 Boot-Script-Path: /boot/boot.scr
@@ -719,30 +798,6 @@ Mtd-Kernel: zImage
 Mtd-Initrd: ramdisk.gz
 Bootloader-Sets-Incorrect-Root: yes
 
-Machine: LEGO MINDSTORMS EV3
-Kernel-Flavors: ev3
-DTB-Id: da850-lego-ev3.dtb
-DTB-Append: yes
-U-Boot-Kernel-Address: 0xC0008000
-U-Boot-Script-Address: 0x0
-U-Boot-Script-Name: bootscr.ev3
-Boot-Kernel-Path: uImage
-Boot-Script-Path: boot.scr
-Required-Packages: u-boot-tools
-Boot-Device: /dev/mmcblk0p1
-
-Machine: LEGO MINDSTORMS EV3 + lms2012-compat
-Kernel-Flavors: ev3-lms2012
-DTB-Id: da850-lego-ev3-lms2012.dtb
-DTB-Append: yes
-U-Boot-Kernel-Address: 0xC0008000
-U-Boot-Script-Address: 0x0
-U-Boot-Script-Name: bootscr.ev3
-Boot-Kernel-Path: uImage
-Boot-Script-Path: boot.scr
-Required-Packages: u-boot-tools
-Boot-Device: /dev/mmcblk0p1
-
 Machine: LeMaker Banana Pi
 Kernel-Flavors: armmp armmp-lpae
 Boot-Script-Path: /boot/boot.scr
@@ -754,6 +809,13 @@ Machine: LeMaker Banana Pro
 Kernel-Flavors: armmp armmp-lpae
 Boot-Script-Path: /boot/boot.scr
 DTB-Id: sun7i-a20-bananapro.dtb
+U-Boot-Script-Name: bootscr.sunxi
+Required-Packages: u-boot-tools
+
+Machine: Lichee Pi Zero
+Kernel-Flavors: armmp armmp-lpae
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: sun8i-v3s-licheepi-zero.dtb
 U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
@@ -794,6 +856,20 @@ U-Boot-Kernel-Address: 0x8000
 U-Boot-Initrd-Address: 0x0
 Boot-Kernel-Path: /boot/uImage
 Boot-Initrd-Path: /boot/uInitrd
+Required-Packages: u-boot-tools
+
+Machine: Marvell Armada 8040 DB board
+Kernel-Flavors: arm64
+DTB-Id: armada-8040-db.dtb
+Boot-Script-Path: /boot/boot.scr
+U-Boot-Script-Name: bootscr.uboot-generic
+Required-Packages: u-boot-tools
+
+Machine: Marvell 8040 MACHIATOBin
+Kernel-Flavors: arm64
+DTB-Id: armada-8040-mcbin.dtb
+Boot-Script-Path: /boot/boot.scr
+U-Boot-Script-Name: bootscr.uboot-generic
 Required-Packages: u-boot-tools
 
 # Marvell dev board has different names depending on how it's booted,
@@ -1017,10 +1093,27 @@ U-Boot-Initrd-Address: 0x05000000
 Required-Packages: u-boot-tools
 Bootloader-Sets-Incorrect-Root: yes
 
+Machine: NETGEAR ReadyNAS Duo v2
+DTB-Id: kirkwood-netgear_readynas_duo_v2.dtb
+DTB-Append: yes
+Mtd-Kernel: uImage
+Mtd-Initrd: minirootfs
+U-Boot-Kernel-Address: 0x00008000
+U-Boot-Initrd-Address: 0x00000000
+Required-Packages: u-boot-tools
+Bootloader-Sets-Incorrect-Root: yes
+
 Machine: NextThing C.H.I.P.
 Kernel-Flavors: armmp
 Boot-Script-Path: /boot/boot.scr
 DTB-Id: sun5i-r8-chip.dtb
+U-Boot-Script-Name: bootscr.sunxi
+Required-Packages: u-boot-tools
+
+Machine: NextThing C.H.I.P. Pro
+Kernel-Flavors: armmp
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: sun5i-gr8-chip-pro.dtb
 U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
@@ -1086,6 +1179,13 @@ DTB-Id: sun7i-a20-olinuxino-lime2.dtb
 U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
+Machine: Olimex A20-OLinuXino-LIME2-eMMC
+Kernel-Flavors: armmp armmp-lpae
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: sun7i-a20-olinuxino-lime2-emmc.dtb
+U-Boot-Script-Name: bootscr.sunxi
+Required-Packages: u-boot-tools
+
 Machine: Olimex A20-Olinuxino Micro
 Kernel-Flavors: armmp armmp-lpae
 Boot-Script-Path: /boot/boot.scr
@@ -1110,6 +1210,13 @@ Boot-Device: /dev/mmcblk0p1
 Boot-Kernel-Path: uImage
 Boot-Initrd-Path: uInitrd
 Boot-Script-Path: boot.scr
+Required-Packages: u-boot-tools
+
+Machine: TI OMAP4 PandaBoard-ES
+Kernel-Flavors: armmp
+DTB-Id: omap4-panda-es.dtb
+Boot-Script-Path: /boot/boot.scr
+U-Boot-Script-Name: bootscr.uboot-generic
 Required-Packages: u-boot-tools
 
 Machine: Orange Pi
@@ -1261,41 +1368,26 @@ DTB-Id: sun5i-a10s-r7-tv-dongle.dtb
 U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
-Machine: Raspberry Pi Model B
-Machine: Raspberry Pi Model B Rev 1
-Machine: Raspberry Pi Model B Rev 2
-Kernel-Flavors: rpi rpi-rpfv
-DTB-Id: bcm2708-rpi-b.dtb
-Boot-Kernel-Path: kernel.img
-Boot-DTB-Path: bcm2708-rpi-b.dtb
-Boot-Device: /dev/mmcblk0p1
-
-Machine: Raspberry Pi Model B Plus
-Machine: Raspberry Pi Model B Plus Rev 1.0
-Machine: Raspberry Pi Model B Plus Rev 1.1
-Machine: Raspberry Pi Model B Plus Rev 1.2
-Kernel-Flavors: rpi rpi-rpfv
-DTB-Id: bcm2708-rpi-b-plus.dtb
-Boot-Kernel-Path: kernel.img
-Boot-DTB-Path: bcm2708-rpi-b-plus.dtb
-Boot-Device: /dev/mmcblk0p1
+Machine: Radxa Rock 2 Square
+Kernel-Flavors: armmp armmp-lpae
+DTB-Id: rk3288-rock2-square.dtb
+Boot-Script-Path: /boot/boot.scr
+U-Boot-Script-Name: bootscr.uboot-generic
+Required-Packages: u-boot-tools
 
 Machine: Raspberry Pi 2 Model B
-Machine: Raspberry Pi 2 Model B Rev 1.0
-Machine: Raspberry Pi 2 Model B Rev 1.1
-Machine: Raspberry Pi 2 Model B Rev 1.2
-Kernel-Flavors: rpi2 rpi2-rpfv
-DTB-Id: bcm2709-rpi-2-b.dtb
-Boot-Kernel-Path: kernel7.img
-Boot-DTB-Path: bcm2709-rpi-2-b.dtb
-Boot-Device: /dev/mmcblk0p1
+Kernel-Flavors: armmp armmp-lpae
+DTB-Id: bcm2836-rpi-2-b.dtb
+U-Boot-Script-Name: bootscr.uboot-generic
+Required-Packages: u-boot-tools
+Boot-Script-Path: /boot/boot.scr
 
-Machine: Raspberry Pi 3 Model B Rev 1.2
-Kernel-Flavors: rpi2 rpi2-rpfv
-DTB-Id: bcm2710-rpi-3-b.dtb
-Boot-Kernel-Path: kernel7.img
-Boot-DTB-Path: bcm2710-rpi-3-b.dtb
-Boot-Device: /dev/mmcblk0p1
+Machine: Raspberry Pi 3 Model B
+Kernel-Flavors: arm64 armmp armmp-lpae
+DTB-Id: bcm2837-rpi-3-b.dtb
+U-Boot-Script-Name: bootscr.uboot-generic
+Required-Packages: u-boot-tools
+Boot-Script-Path: /boot/boot.scr
 
 Machine: Seagate FreeAgent Dockstar
 Machine: Seagate FreeAgent DockStar
@@ -1384,10 +1476,17 @@ Bootloader-Sets-Incorrect-Root: yes
 
 Machine: TI AM335x BeagleBone
 Machine: TI AM335x BeagleBone Black
+Kernel-Flavors: armmp
+DTB-Id: am335x-boneblack.dtb
+Boot-Script-Path: /boot/boot.scr
+U-Boot-Script-Name: bootscr.beaglebone
+Required-Packages: u-boot-tools
+
 Machine: TI AM335x BeagleBone Green
-Kernel-Flavors: bb.org
-U-Env-Path: /boot/uEnv.txt
-U-Env-Name: uenv.beaglebone
+Kernel-Flavors: armmp
+DTB-Id: am335x-bonegreen.dtb
+Boot-Script-Path: /boot/boot.scr
+U-Boot-Script-Name: bootscr.beaglebone
 Required-Packages: u-boot-tools
 
 Machine: TI AM5728 BeagleBoard-X15
@@ -1434,28 +1533,28 @@ Machine: Wandboard i.MX6 Dual Lite Board
 Kernel-Flavors: armmp
 DTB-Id: imx6dl-wandboard.dtb
 Boot-Script-Path: /boot/boot.scr
-U-Boot-Script-Name: bootscr.wandboard
+U-Boot-Script-Name: bootscr.imx-base bootscr.uboot-generic
 Required-Packages: u-boot-tools
 
 Machine: Wandboard i.MX6 Dual Lite Board rev B1
 Kernel-Flavors: armmp
 DTB-Id: imx6dl-wandboard-revb1.dtb
 Boot-Script-Path: /boot/boot.scr
-U-Boot-Script-Name: bootscr.wandboard
+U-Boot-Script-Name: bootscr.imx-base bootscr.uboot-generic
 Required-Packages: u-boot-tools
 
 Machine: Wandboard i.MX6 Quad Board
 Kernel-Flavors: armmp
 DTB-Id: imx6q-wandboard.dtb
 Boot-Script-Path: /boot/boot.scr
-U-Boot-Script-Name: bootscr.wandboard
+U-Boot-Script-Name: bootscr.imx-base bootscr.uboot-generic
 Required-Packages: u-boot-tools
 
 Machine: Wandboard i.MX6 Quad Board rev B1
 Kernel-Flavors: armmp
 DTB-Id: imx6q-wandboard-revb1.dtb
 Boot-Script-Path: /boot/boot.scr
-U-Boot-Script-Name: bootscr.wandboard
+U-Boot-Script-Name: bootscr.imx-base bootscr.uboot-generic
 Required-Packages: u-boot-tools
 
 Machine: Wexler TAB7200
@@ -1515,6 +1614,7 @@ U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
 Machine: Xunlong Orange Pi Plus
+Machine: Xunlong Orange Pi Plus / Plus 2
 Kernel-Flavors: armmp armmp-lpae
 Boot-Script-Path: /boot/boot.scr
 DTB-Id: sun8i-h3-orangepi-plus.dtb
@@ -1525,6 +1625,13 @@ Machine: Xunlong Orange Pi Plus 2E
 Kernel-Flavors: armmp armmp-lpae
 Boot-Script-Path: /boot/boot.scr
 DTB-Id: sun8i-h3-orangepi-plus2e.dtb
+U-Boot-Script-Name: bootscr.sunxi
+Required-Packages: u-boot-tools
+
+Machine: Xunlong Orange Pi Zero
+Kernel-Flavors: armmp armmp-lpae
+Boot-Script-Path: /boot/boot.scr
+DTB-Id: sun8i-h2-plus-orangepi-zero.dtb
 U-Boot-Script-Name: bootscr.sunxi
 Required-Packages: u-boot-tools
 
